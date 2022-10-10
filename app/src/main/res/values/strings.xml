@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ProjetoDDeSC</string>
+    <string name="edit_usuario">Usuário</string>
+    <string name="edit_senha">Senha</string>
+    <string name="botao_entrar">Entrar</string>
+    <string name="text_ou">ou</string>
+    <string name="botao_sair">Sair</string>
+
+</resources>
