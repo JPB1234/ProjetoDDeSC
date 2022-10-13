@@ -2,9 +2,12 @@ package com.example.projetoddesc;
 
 import static android.content.ContentValues.TAG;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -69,8 +72,27 @@ public class MainActivity extends AppCompatActivity {
 
     private void sigIn(){
         Intent intent = googleSignInClient.getSignInIntent();
-        startActivityForResult(intent, 1);
+        //startActivityForResult(intent, 1);
+        abreActivity.launch(intent);
     }
+
+    ActivityResultLauncher<Intent> abreActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if(result.getResultCode() == Activity.RESULT_OK){
+            Intent intent = result.getData();
+
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(intent);
+            try {
+                GoogleSignInAccount conta = task.getResult(ApiException.class);
+                loginComGoogle(conta.getIdToken());
+            }catch (ApiException exception){
+                Toast.makeText(getApplicationContext(), "Nenhum usuário Google está logado no aparelho", Toast.LENGTH_LONG).show();
+                Log.d("Erro:", exception.toString());
+            }
+        }
+    } );
+
+
+
 
     private void loginComGoogle(String token){
         AuthCredential credential = GoogleAuthProvider.getCredential(token, null);
@@ -118,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                             //updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCustomToken:failure", task.getException());
+                            Log.d(TAG, "signInWithCustomToken:failure", task.getException());
                             Toast.makeText(getApplicationContext(), "Usuário e/ou senha incorretos", Toast.LENGTH_LONG).show();
                             //updateUI(null);
                         }
